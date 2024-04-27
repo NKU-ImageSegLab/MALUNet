@@ -49,20 +49,6 @@ class setting_config:
     save_interval = 100
     threshold = 0.5
 
-    train_transformer = transforms.Compose([
-        myNormalize(datasets, train=True),
-        myToTensor(),
-        myRandomHorizontalFlip(p=0.5),
-        myRandomVerticalFlip(p=0.5),
-        myRandomRotation(p=0.5, degree=[0, 360]),
-        myResize(input_size_h, input_size_w)
-    ])
-    test_transformer = transforms.Compose([
-        myNormalize(datasets, train=False),
-        myToTensor(),
-        myResize(input_size_h, input_size_w)
-    ])
-
     opt = 'AdamW'
     assert opt in ['Adadelta', 'Adagrad', 'Adam', 'AdamW', 'Adamax', 'ASGD', 'RMSprop', 'Rprop', 'SGD'], 'Unsupported optimizer!'
     if opt == 'Adadelta':
