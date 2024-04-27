@@ -17,7 +17,7 @@ class NPYDatasets(Dataset):
         self.ground_truth_path = join(base_path, "masks")
         self.gt_format = config["gt_format"]
         self.image_paths = [join(self.origin_image_path, f) for f in os.listdir(self.origin_image_path)
-                            if isfile(join(self.ground_truth_path, f)) and splitext(f)[1][1:] in support_types]
+                            if isfile(join(self.origin_image_path, f)) and splitext(f)[1][1:] in support_types]
         self.transformer = transformer
 
     def __getitem__(self, index):
