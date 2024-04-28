@@ -25,7 +25,7 @@ rank: null
 amp: false
 batch_size: 8
 epochs: 300
-work_dir: results/malunet/isic18/
+work_dir: results/malunet/isic16/
 print_interval: 20
 val_interval: 30
 save_interval: 100

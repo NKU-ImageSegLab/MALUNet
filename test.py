@@ -20,7 +20,7 @@ def main(config):
 
     print('#----------GPU init----------#')
     set_seed(config["seed"])
-    gpu_ids = [0]  # [0, 1, 2, 3]
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     torch.cuda.empty_cache()
 
     print('#----------Preparing dataset----------#')
@@ -52,12 +52,12 @@ def main(config):
         bridge=model_cfg['bridge']
     )
 
-    model = torch.nn.DataParallel(model.cuda(), device_ids=gpu_ids, output_device=gpu_ids[0])
+    model = model.to(device)
 
     if os.path.exists(os.path.join(checkpoint_dir, 'best.pth')):
         print('#----------Testing----------#')
         best_weight = torch.load(config["work_dir"] + 'checkpoints/best.pth', map_location=torch.device('cpu'))
-        model.module.load_state_dict(best_weight)
+        model.load_state_dict(best_weight)
         test_one_epoch(
             val_loader,
             model,

@@ -33,7 +33,7 @@ def main(config):
 
     print('#----------GPU init----------#')
     set_seed(config["seed"])
-    gpu_ids = [0]  # [0, 1, 2, 3]
+    device = 'cuda' if torch.cuda.is_available() else 'cpu'
     torch.cuda.empty_cache()
 
     print('#----------Preparing dataset----------#')
@@ -81,7 +81,8 @@ def main(config):
         bridge=model_cfg['bridge']
     )
 
-    model = torch.nn.DataParallel(model.cuda(), device_ids=gpu_ids, output_device=gpu_ids[0])
+    # model = torch.nn.DataParallel(model.cuda(), device_ids=gpu_ids, output_device=gpu_ids[0])
+    model = model.to(device)
 
     print('#----------Prepareing loss, opt, sch and amp----------#')
     criterion = BceDiceLoss()
@@ -97,7 +98,7 @@ def main(config):
     if os.path.exists(resume_model):
         print('#----------Resume Model and Other params----------#')
         checkpoint = torch.load(resume_model, map_location=torch.device('cpu'))
-        model.module.load_state_dict(checkpoint['model_state_dict'])
+        model.load_state_dict(checkpoint['model_state_dict'])
         optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
         scheduler.load_state_dict(checkpoint['scheduler_state_dict'])
         saved_epoch = checkpoint['epoch']
@@ -132,7 +133,7 @@ def main(config):
         )
 
         if loss < min_loss:
-            torch.save(model.module.state_dict(), os.path.join(checkpoint_dir, 'best.pth'))
+            torch.save(model.state_dict(), os.path.join(checkpoint_dir, 'best.pth'))
             min_loss = loss
             min_epoch = epoch
 
@@ -142,7 +143,7 @@ def main(config):
                 'min_loss': min_loss,
                 'min_epoch': min_epoch,
                 'loss': loss,
-                'model_state_dict': model.module.state_dict(),
+                'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'scheduler_state_dict': scheduler.state_dict(),
             }, os.path.join(checkpoint_dir, 'latest.pth'))

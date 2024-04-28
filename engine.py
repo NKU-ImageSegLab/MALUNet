@@ -118,3 +118,11 @@ def test_one_epoch(
                 else:
                     predict_image = msk_pred_output[i]
                 imageio.imwrite(os.path.join(output_folder_path, name), predict_image)
+        vl_metrics_result = MetricsResult(metrics.compute())
+        params, flops = vl_metrics_result.cal_params_flops(model, 256)
+        vl_metrics_result.to_result_csv(
+            os.path.join(output_folder_path, 'result.csv'),
+            'MALUNet',
+            flops=flops,
+            params=params
+        )
